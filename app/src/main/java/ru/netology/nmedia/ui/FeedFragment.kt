@@ -73,9 +73,13 @@ class FeedFragment : Fragment() {
                     .show()
             }
         }
+
         lifecycleScope.launchWhenCreated {
-            viewModel.data.collectLatest{
-                adapter.submitData(it)
+            adapter.loadStateFlow.collectLatest { state ->
+                binding.swiperefresh.isRefreshing =
+                    state.refresh is LoadState.Loading ||
+                    state.prepend is LoadState.Loading ||
+                    state.append is LoadState.Loading
             }
         }
 
@@ -91,7 +95,6 @@ class FeedFragment : Fragment() {
 //        }
 
         binding.swiperefresh.setOnRefreshListener {
-            //viewModel.refreshPosts()
             adapter.refresh()
         }
 
